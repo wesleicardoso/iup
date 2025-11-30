@@ -1,6 +1,7 @@
 <script setup>
 import { Link, usePage } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
+import Logo from '../../../public/image/logo/iup-logo.png';
 
 // Ícones SVG... (Mantidos)
 
@@ -66,6 +67,7 @@ const isActive = (routeKey) => {
 </script>
 
 <template>
+    
     <div class="flex h-screen w-full bg-gray-50 font-sans text-gray-800">
         
         <div v-if="showMobileMenu" 
@@ -78,10 +80,8 @@ const isActive = (routeKey) => {
             
             <div class="h-16 flex items-center px-6 bg-sesi-blue-dark border-b border-white/10 justify-between">
                 <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded bg-white flex items-center justify-center">
-                        <span class="text-sesi-blue font-extrabold text-lg">S</span>
-                    </div>
-                    <span class="text-xl font-bold text-white tracking-wide">Sesi<span class="text-sesi-green">Conecta</span></span>
+               
+                    <span class="text-xl font-bold text-white tracking-wide">I<span class="text-sesi-green">UP</span></span>
                 </div>
                 <button @click="showMobileMenu = false" class="lg:hidden text-white">
                     <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">

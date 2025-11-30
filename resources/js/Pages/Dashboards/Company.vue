@@ -1,61 +1,42 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, useForm } from '@inertiajs/vue3';
 
 // Props vindas do DashboardController
 const props = defineProps({
-    company: Object,
-    appointments: Array, // Histórico geral (para contagem)
-    upcomingAppointments: Array // Lista filtrada de futuros
+    company: {
+        type: Object,
+        required: true,
+        default: () => ({}) // <- segurança extra
+    },
+    appointments: {
+        type: Array,
+        default: () => []
+    },
+    upcomingAppointments: {
+        type: Array,
+        default: () => []
+    },
+    onboardingDocuments: {
+        type: Array,
+        default: () => []
+    }
 });
 
-// Configuração das Etapas da Timeline (Adicionando quem é o responsável)
+// Formulário para Ação de Aprovação
+const formApproval = useForm({});
+
+// Configuração das Etapas da Timeline (Mantida)
 const stepsConfig = [
-    { 
-        key: 'contrato_assinado', 
-        label: 'Contrato Assinado', 
-        icon: '📝', 
-        desc: 'Documentação jurídica finalizada.',
-        responsible: 'Vendas/Admin' 
-    },
-    { 
-        key: 'importacao_m1', 
-        label: 'Importação de Dados (M1)', 
-        icon: '📊', 
-        desc: 'Carga de dados de funcionários e cargos no sistema.',
-        responsible: 'Vendas/Admin'
-    },
-    { 
-        key: 'visita_tecnica', 
-        label: 'Visita Técnica', 
-        icon: '👷', 
-        desc: 'Engenheiro de segurança realiza levantamento de riscos in-loco.',
-        responsible: 'Técnica de Segurança'
-    },
-    { 
-        key: 'aprovacao_pgr', 
-        label: 'Elaboração do PGR', 
-        icon: '✅', 
-        desc: 'Programa de Gerenciamento de Riscos em análise final.' ,
-        responsible: 'Técnica de Segurança'
-    },
-    { 
-        key: 'aprovacao_pcmso', 
-        label: 'Emissão do PCMSO', 
-        icon: '🩺', 
-        desc: 'Médico coordenador define os exames ocupacionais obrigatórios.',
-        responsible: 'Médico Coordenador'
-    },
-    { 
-        key: 'concluido', 
-        label: 'Acesso Liberado', 
-        icon: '🚀', 
-        desc: 'Sua empresa está 100% apta a operar.',
-        responsible: 'Sistema' 
-    },
+    { key: 'contrato_assinado', label: 'Contrato Assinado', icon: '📝', desc: 'Vínculo jurídico estabelecido.', responsible: 'Vendas/Admin' },
+    { key: 'importacao_m1', label: 'Importação de Dados (M1)', icon: '📊', desc: 'Carga de dados de funcionários e cargos.' , responsible: 'Vendas/Admin'},
+    { key: 'visita_tecnica', label: 'Visita Técnica', icon: '👷', desc: 'Levantamento de riscos in-loco.', responsible: 'Técnica de Segurança'},
+    { key: 'aprovacao_pgr', label: 'Elaboração do PGR', icon: '✅', desc: 'Programa de Gerenciamento de Riscos em análise.', responsible: 'Técnica de Segurança'},
+    { key: 'aprovacao_pcmso', label: 'Emissão do PCMSO', icon: '🩺', desc: 'Médico coordenador define os exames ocupacionais.', responsible: 'Médico Coordenador'},
+    { key: 'concluido', label: 'Acesso Liberado', icon: '🚀', desc: 'Sua empresa está 100% apta a operar.', responsible: 'Sistema' },
 ];
 
-// Lógica para verificar o status visual de cada etapa
+// Lógica para verificar o status visual de cada etapa (Mantida)
 const getStepStatus = (stepKey) => {
     const keys = stepsConfig.map(s => s.key);
     const currentIndex = keys.indexOf(props.company.onboarding_step);
@@ -66,13 +47,28 @@ const getStepStatus = (stepKey) => {
     return 'pending';
 };
 
-// Formatadores de Data
-const formatVisitDate = (date) => {
-    if (!date) return '';
-    return new Date(date + 'T12:00:00').toLocaleDateString('pt-BR');
+// ✅ FUNÇÃO CORRIGIDA COM VERIFICAÇÃO DE UNDEFINED/NULL (resolve o erro 'find')
+const getDocumentForStep = (stepKey) => {
+    // 1. Defesa: Se a prop não for um array válido, retorna null imediatamente.
+    if (!Array.isArray(props.onboardingDocuments)) return null;
+
+    // 2. Busca o primeiro documento para o passo que AINDA NÃO FOI APROVADO
+    return props.onboardingDocuments.find(doc => 
+        doc.step_key === stepKey && doc.is_approved_by_client === false
+    );
 };
 
+// Funções Auxiliares de Data (Mantidas)
+const formatVisitDate = (date) => date ? new Date(date + 'T12:00:00').toLocaleDateString('pt-BR') : '';
 const formatDateTime = (date) => new Date(date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+
+
+// Ação de Aprovação do Cliente
+const submitApproval = (companyId, stepKey) => {
+    if(confirm(`Tem certeza que deseja APROVAR o documento ${stepKey.toUpperCase()} e avançar para a próxima etapa?`)) {
+        formApproval.post(route('client.onboarding.approve', [companyId, stepKey]));
+    }
+};
 </script>
 
 <template>
@@ -88,7 +84,7 @@ const formatDateTime = (date) => new Date(date).toLocaleDateString('pt-BR', { da
             <div class="bg-white p-8 rounded-xl shadow-sm border-t-4 border-sesi-blue text-center">
                 <h2 class="text-2xl font-bold text-sesi-blue mb-2">Preparando seu ambiente, {{ company.name }}!</h2>
                 <p class="text-gray-600 max-w-2xl mx-auto text-lg leading-relaxed">
-                    Acompanhe em tempo real o andamento das etapas de ativação.
+                    Sua ação é necessária nas etapas com status **Em Andamento**.
                 </p>
             </div>
 
@@ -124,23 +120,34 @@ const formatDateTime = (date) => new Date(date).toLocaleDateString('pt-BR', { da
                             
                             <div class="flex flex-col md:flex-row justify-between md:items-start gap-4">
                                 <div class="flex-1">
-                                    <h4 class="font-bold text-lg flex items-center gap-2"
+                                    <h4 class="text-lg font-bold flex items-center gap-2"
                                         :class="getStepStatus(step.key) === 'pending' ? 'text-gray-500' : 'text-gray-800'">
                                         {{ step.icon }} {{ step.label }}
                                     </h4>
                                     
-                                    <div class="text-sm text-gray-500 mt-2 leading-relaxed">
-                                        <div v-if="step.key === 'visita_tecnica' && company.technical_visit_at" 
-                                             class="inline-flex items-center gap-3 bg-blue-50 text-sesi-blue px-4 py-2 rounded-lg border border-blue-100 shadow-sm">
-                                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                            </svg>
-                                            <span class="font-bold">Agendada para: {{ formatVisitDate(company.technical_visit_at) }}</span>
+                                    <p class="text-sm text-gray-500 mt-2 leading-relaxed">{{ step.desc }}</p>
+
+                                    <div v-if="getStepStatus(step.key) === 'current' && (step.key === 'aprovacao_pgr' || step.key === 'aprovacao_pcmso')">
+                                        <div v-if="getDocumentForStep(step.key)" class="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg flex flex-col sm:flex-row items-center justify-between gap-3">
+                                            
+                                            <span class="text-red-700 font-bold text-sm flex items-center gap-2">
+                                                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.3 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                                                Ação Requerida: Seu OK é necessário.
+                                            </span>
+
+                                            <div class="flex flex-col sm:flex-row gap-2">
+                                                <a :href="route('safety.document.download', [company.id, step.key])" target="_blank" class="px-3 py-1.5 border border-red-500 text-red-600 font-bold rounded-lg hover:bg-red-100 transition-colors text-xs flex justify-center">
+                                                    Baixar Laudo Final
+                                                </a>
+                                                <button @click="submitApproval(company.id, step.key)" 
+                                                    :disabled="formApproval.processing"
+                                                    class="px-3 py-1.5 bg-sesi-green text-white font-bold rounded-lg hover:bg-green-600 transition-colors text-xs flex justify-center">
+                                                    APROVAR E AVANÇAR
+                                                </button>
+                                            </div>
                                         </div>
-                                        <p v-else class="text-sm text-gray-600">
-                                            {{ step.desc }}
-                                        </p>
                                     </div>
+                                    
                                 </div>
 
                                 <div class="flex-shrink-0 text-right">
@@ -172,7 +179,10 @@ const formatDateTime = (date) => new Date(date).toLocaleDateString('pt-BR', { da
                     <h2 class="text-2xl font-bold text-sesi-blue mb-1">Olá, {{ company.name }}</h2>
                     <p class="text-gray-500 text-sm">Seu painel está ativo e operante.</p>
                 </div>
-              
+                <Link :href="route('appointments.create')" class="w-full md:w-auto text-center px-6 py-3 bg-sesi-green hover:bg-green-600 text-white font-bold rounded-lg shadow-sm transition-transform active:scale-95 flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+                    Novo Agendamento
+                </Link>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -187,16 +197,17 @@ const formatDateTime = (date) => new Date(date).toLocaleDateString('pt-BR', { da
                     <Link :href="route('appointments.index')" class="text-sm text-sesi-blue hover:underline font-bold mt-4 inline-block">Ver Histórico &rarr;</Link>
                 </div>
                 <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-blue-400">
-                    <div class="text-blue-500 font-bold text-xs uppercase tracking-wide opacity-70">Próximos Agendamentos</div>
+                    <div class="text-blue-500 font-bold text-xs uppercase tracking-wide opacity-70">Agendados (Futuro)</div>
                     <div class="text-4xl font-extrabold text-gray-800 mt-2">{{ upcomingAppointments.length }}</div>
                 </div>
             </div>
 
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                 <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                    <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                    <h3 class="font-bold text-gray-800 flex items-center gap-2">
                         📅 Detalhes dos Próximos Exames
                     </h3>
+                    <Link :href="route('appointments.index')" class="text-sm text-sesi-blue hover:underline font-bold">Ver todos</Link>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left min-w-[700px]">
