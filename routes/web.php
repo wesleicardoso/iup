@@ -7,6 +7,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\ExamController;
+use App\Http\Controllers\MagicLoginController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SafetyController;
 use App\Http\Controllers\SalesController;
@@ -26,7 +27,7 @@ Route::get('/', function () {
         'canRegister' => Route::has('register'),
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
-     ]);
+    ]);
 });
 
 Route::get('/dashboard', function () {
@@ -37,6 +38,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/admin/gerar-qr/{userId}', [MagicLoginController::class, 'generate'])->name('magic.qr.generate');
+    Route::get('/admin/empresa/{id}/qr-acesso', [MagicLoginController::class, 'generateForCompany'])->name('magic.qr.company');
 
     // Rota Inteligente (Redireciona para o painel certo)
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -156,4 +159,9 @@ Route::middleware(['auth'])->prefix('seguranca')->group(function () {
 
 
 Route::get('/api/cnpj/{cnpj}', [CnpjApiController::class, 'lookup'])->name('api.cnpj.lookup');
+
+Route::get('/magic-login/{user}', [MagicLoginController::class, 'login'])
+    ->name('magic.login.attempt')
+    ->middleware('signed');
+
 require __DIR__ . '/auth.php';
