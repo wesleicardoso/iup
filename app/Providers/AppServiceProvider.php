@@ -35,5 +35,7 @@ class AppServiceProvider extends ServiceProvider
                 URL::forceRootUrl(config('app.url'));
             }
         }
+
+        
     }
 }

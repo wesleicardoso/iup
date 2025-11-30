@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -34,6 +35,12 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
+            'company_status' => [
+                'is_active' => fn() => Auth::user()?->company?->is_active ?? true, // Assume true se não for empresa
+                'is_admin_or_provider' => fn() => in_array(Auth::user()?->role, ['admin', 'provider', 'sales', 'safety']),
+                // ...
+            ],
+
         ];
     }
 }

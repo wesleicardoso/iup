@@ -1,8 +1,9 @@
 <script setup>
-import { ref } from 'vue';
 import { Link, usePage } from '@inertiajs/vue3';
+import { ref, computed } from 'vue';
 
-// Ícones SVG
+// Ícones SVG... (Mantidos)
+
 const icons = {
     home: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6",
     users: "M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z",
@@ -22,33 +23,44 @@ const user = page.props.auth.user;
 // Estado do Menu Mobile
 const showMobileMenu = ref(false);
 
-// Configuração do Menu
-const menuItems = [
-    { label: 'Dashboard', route: 'dashboard', icon: icons.home, show: true },
+// Verifica se a empresa está em modo onboarding (inativo)
+const isCompanyInactive = computed(() => {
+    // Leitura segura do status de ativação da empresa, que deve ser TRUE se não for a role 'company'.
+    const isActiveProp = page.props.company?.is_active; 
     
-    // Apenas VENDEDOR
+    // Filtro: Se for role 'company' E o status de ativação for explicitamente FALSE, é inativo.
+    return user.role === 'company' && isActiveProp === false;
+});
+
+
+// Configuração do Menu (APLICANDO CORREÇÃO DO OPERADOR &&)
+const menuItems = [
+    // 1. Dashboard - Sempre visível
+    { label: 'Dashboard', route: 'dashboard', icon: icons.home, show: true },
+
+    // 2. COMERCIAL / VENDAS (Vendedor ou Admin - SEMPRE ATIVO)
     { label: 'Comercial / Vendas', route: 'sales.index', icon: icons.chart, show: user.role === 'sales' || user.role === 'admin' },
 
-    // Apenas EMPRESA
-    { label: 'Meus Agendamentos', route: 'appointments.index', icon: icons.calendar, show: user.role === 'company' || user.role === 'admin'},
-    { label: 'Funcionários', route: 'employees.index', icon: icons.users, show: user.role === 'company'|| user.role === 'admin' },
-    { label: 'Controle de EPIs', route: 'epi.index', icon: icons.helmet, show: user.role === 'company'|| user.role === 'admin' },
+    // 3. OPERACIONAIS DA EMPRESA (CORREÇÃO AQUI: APENAS SE FOR COMPANY E ESTIVER ATIVO)
+    // A lógica 'user.role === 'company' || user.role === 'admin'' estava errada!
+    // A lógica é: Admin Vê OU (Company Vê E Não Está Inativo)
+    { label: 'Meus Agendamentos', route: 'appointments.index', icon: icons.calendar, show: user.role === 'admin' || (user.role === 'company' && !isCompanyInactive.value) },
+    { label: 'Funcionários', route: 'employees.index', icon: icons.users, show: user.role === 'admin' || (user.role === 'company' && !isCompanyInactive.value) },
+    { label: 'Controle de EPIs', route: 'epi.index', icon: icons.helmet, show: user.role === 'admin' || (user.role === 'company' && !isCompanyInactive.value) },
     
-    // Apenas CREDENCIADA/MÉDICO
-    // ESTE É O LINK PARA CONFIRMAR A DATA DE SOLICITAÇÕES:
+    // 4. CREDENCIADA / MÉDICO
     { label: 'Recepção / Agenda', route: 'provider.appointments.index', icon: icons.check, show: user.role === 'provider' || user.role === 'admin' },
-   
+    // { label: 'Painel Médico', route: 'doctor.index', icon: icons.heart, show: user.role === 'provider' || user.role === 'admin' },
     
-    // Segurança
+    // 5. Segurança
     { label: 'Segurança / PGR', route: 'safety.index', icon: icons.clipboard, show: user.role === 'safety' || user.role === 'admin' },
 
-    // Comum
+    // 6. Suporte - Sempre visível
     { label: 'Suporte', route: 'support.index', icon: icons.settings, show: true },
 ];
 
 const isActive = (routeKey) => {
     if (!routeKey) return false;
-    // Lógica para manter ativo em sub-rotas
     return route().current(routeKey) || route().current(routeKey.replace('.index', '.*'));
 };
 </script>
