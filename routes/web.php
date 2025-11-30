@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\ClientActionController;
+use App\Http\Controllers\CnpjApiController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\EmployeeController;
@@ -13,13 +15,18 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
+
+// Route::get('/', function () {
+//     return Inertia::render('Auth/Login');
+// });
+
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
-    ]);
+     ]);
 });
 
 Route::get('/dashboard', function () {
@@ -105,8 +112,7 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware(['auth', 'role:company'])->prefix('empresa')->group(function () {
-    // ... outras rotas ...
-    // Rota para baixar o PDF
+    Route::post('/onboarding/{company}/aprovar/{stepKey}', [ClientActionController::class, 'approveDocument'])->name('client.onboarding.approve');
     Route::get('/agendamentos/{id}/download', [AppointmentController::class, 'downloadResult'])->name('appointments.download');
 });
 
@@ -144,6 +150,10 @@ Route::middleware(['auth'])->prefix('seguranca')->group(function () {
     Route::get('/dashboard', [SafetyController::class, 'index'])->name('safety.index');
     Route::post('/empresa/{id}/agendar', [SafetyController::class, 'storeVisitDate'])->name('safety.schedule');
     Route::post('/empresa/{id}/aprovar-pgr', [SafetyController::class, 'approvePGR'])->name('safety.approve');
+    Route::post('/empresa/{id}/documento/{stepKey}/upload', [SafetyController::class, 'storeDocument'])->name('safety.document.upload');
+    Route::get('/empresa/{id}/documento/{stepKey}/download', [SafetyController::class, 'downloadDocument'])->name('safety.document.download');
 });
 
+
+Route::get('/api/cnpj/{cnpj}', [CnpjApiController::class, 'lookup'])->name('api.cnpj.lookup');
 require __DIR__ . '/auth.php';

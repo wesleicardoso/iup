@@ -17,6 +17,10 @@ export default {
             },
             // --- DEFINIÇÃO DAS CORES SESI ---
             colors: {
+                'iup-blue': '#23508C',        // Azul escuro principal (fundo da coluna esquerda)
+                'iup-dark-blue-text': '#283E67', // Azul escuro para textos/estrutura
+                'iup-green': '#6DBE45',       // Verde de destaque (Botões e Slogans)
+                'iup-light-gray-bg': '#E6E8ED', // (Se usar)
                 'sesi-blue': {
                     DEFAULT: '#003399', // Azul principal (Header/Sidebar)
                     dark: '#002266',    // Azul mais escuro (Fundo da página)

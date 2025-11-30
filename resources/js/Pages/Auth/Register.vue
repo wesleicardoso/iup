@@ -21,25 +21,25 @@ const submit = () => {
 
 <template>
     <GuestLayout>
-        <Head title="Criar Conta" />
+        <Head title="Solicitar Implantação" />
 
         <div class="mb-10">
-            <h2 class="text-3xl font-bold text-sesi-blue mb-2">Criar nova conta</h2>
-            <p class="text-gray-500">Preencha os dados abaixo para iniciar.</p>
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">Solicite sua Implantação IUp</h2>
+            <p class="text-gray-500">Preencha seus dados para iniciar o processo de Onboarding.</p>
         </div>
 
         <form @submit.prevent="submit" class="space-y-5">
             
             <div>
-                <InputLabel for="name" value="Nome Completo / Razão Social" class="text-gray-700 font-semibold" />
+                <InputLabel for="name" value="Nome / Razão Social" class="text-gray-700 font-semibold" />
                 <TextInput
                     id="name"
                     type="text"
-                    class="mt-2 block w-full rounded-lg border-gray-300 shadow-sm focus:border-sesi-blue focus:ring-sesi-blue py-3 px-4"
+                    class="mt-2 block w-full rounded-lg border-gray-300 shadow-sm focus:border-iup-blue focus:ring-iup-blue py-3 px-4"
                     v-model="form.name"
                     required
                     autofocus
-                    placeholder="Ex: Indústria Metalúrgica Ltda"
+                    placeholder="Ex: RH Metalúrgica Ltda"
                 />
                 <InputError class="mt-2" :message="form.errors.name" />
             </div>
@@ -49,7 +49,7 @@ const submit = () => {
                 <TextInput
                     id="email"
                     type="email"
-                    class="mt-2 block w-full rounded-lg border-gray-300 shadow-sm focus:border-sesi-blue focus:ring-sesi-blue py-3 px-4"
+                    class="mt-2 block w-full rounded-lg border-gray-300 shadow-sm focus:border-iup-blue focus:ring-iup-blue py-3 px-4"
                     v-model="form.email"
                     required
                     placeholder="contato@empresa.com"
@@ -62,7 +62,7 @@ const submit = () => {
                 <TextInput
                     id="password"
                     type="password"
-                    class="mt-2 block w-full rounded-lg border-gray-300 shadow-sm focus:border-sesi-blue focus:ring-sesi-blue py-3 px-4"
+                    class="mt-2 block w-full rounded-lg border-gray-300 shadow-sm focus:border-iup-blue focus:ring-iup-blue py-3 px-4"
                     v-model="form.password"
                     required
                     placeholder="Mínimo 8 caracteres"
@@ -75,7 +75,7 @@ const submit = () => {
                 <TextInput
                     id="password_confirmation"
                     type="password"
-                    class="mt-2 block w-full rounded-lg border-gray-300 shadow-sm focus:border-sesi-blue focus:ring-sesi-blue py-3 px-4"
+                    class="mt-2 block w-full rounded-lg border-gray-300 shadow-sm focus:border-iup-blue focus:ring-iup-blue py-3 px-4"
                     v-model="form.password_confirmation"
                     required
                     placeholder="Repita a senha"
@@ -85,19 +85,19 @@ const submit = () => {
 
             <div class="pt-4">
                 <button
-                    class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-base font-bold text-white bg-sesi-green hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sesi-green transition-colors"
+                    class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-base font-bold text-white bg-iup-green hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-iup-green transition-colors"
                     :class="{ 'opacity-50 cursor-not-allowed': form.processing }"
                     :disabled="form.processing"
                 >
-                    Cadastrar
+                    Cadastrar e Solicitar
                 </button>
             </div>
 
             <div class="text-center mt-6">
                 <p class="text-sm text-gray-600">
                     Já possui cadastro?
-                    <Link :href="route('login')" class="font-bold text-sesi-blue hover:underline">
-                        Fazer login
+                    <Link :href="route('login')" class="font-bold text-iup-blue hover:underline">
+                        Fazer Login
                     </Link>
                 </p>
             </div>

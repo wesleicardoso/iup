@@ -30,10 +30,10 @@ const submit = () => {
 
 <template>
     <GuestLayout>
-        <Head title="Acessar Sistema" />
+        <Head title="Acessar Plataforma" />
 
         <div class="mb-10">
-            <h2 class="text-3xl font-bold text-sesi-blue mb-2">Bem-vindo de volta</h2>
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">Acesse sua plataforma IUp</h2>
             <p class="text-gray-500">Insira suas credenciais para acessar o painel.</p>
         </div>
 
@@ -48,7 +48,7 @@ const submit = () => {
                 <TextInput
                     id="email"
                     type="email"
-                    class="mt-2 block w-full rounded-lg border-gray-300 shadow-sm focus:border-sesi-blue focus:ring-sesi-blue py-3 px-4"
+                    class="mt-2 block w-full rounded-lg border-gray-300 shadow-sm focus:border-iup-blue focus:ring-iup-blue py-3 px-4"
                     v-model="form.email"
                     required
                     autofocus
@@ -62,7 +62,7 @@ const submit = () => {
                 <TextInput
                     id="password"
                     type="password"
-                    class="mt-2 block w-full rounded-lg border-gray-300 shadow-sm focus:border-sesi-blue focus:ring-sesi-blue py-3 px-4"
+                    class="mt-2 block w-full rounded-lg border-gray-300 shadow-sm focus:border-iup-blue focus:ring-iup-blue py-3 px-4"
                     v-model="form.password"
                     required
                     placeholder="••••••••"
@@ -72,21 +72,21 @@ const submit = () => {
 
             <div class="flex items-center justify-between">
                 <label class="flex items-center">
-                    <Checkbox name="remember" v-model:checked="form.remember" class="text-sesi-blue focus:ring-sesi-blue rounded" />
+                    <Checkbox name="remember" v-model:checked="form.remember" class="text-iup-blue focus:ring-iup-blue rounded" />
                     <span class="ms-2 text-sm text-gray-600">Lembrar-me</span>
                 </label>
 
                 <Link
                     v-if="canResetPassword"
                     :href="route('password.request')"
-                    class="text-sm font-medium text-sesi-blue hover:text-sesi-blue-dark hover:underline"
+                    class="text-sm font-medium text-iup-blue hover:text-iup-dark-blue-text hover:underline"
                 >
                     Esqueceu a senha?
                 </Link>
             </div>
 
             <button
-                class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-base font-bold text-white bg-sesi-green hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sesi-green transition-colors"
+                class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-base font-bold text-white bg-iup-green hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-iup-green transition-colors"
                 :class="{ 'opacity-50 cursor-not-allowed': form.processing }"
                 :disabled="form.processing"
             >
@@ -96,8 +96,8 @@ const submit = () => {
             <div class="text-center mt-6">
                 <p class="text-sm text-gray-600">
                     Não tem uma conta?
-                    <Link :href="route('register')" class="font-bold text-sesi-blue hover:underline">
-                        Cadastre-se aqui
+                    <Link :href="route('register')" class="font-bold text-iup-blue hover:underline">
+                        Solicite a Implantação
                     </Link>
                 </p>
             </div>

@@ -8,7 +8,7 @@ class Exam extends Model
 {
     protected $guarded = [];
 
-    // Relação: Um exame pode ser exigido por várias funções
+    //teste
     public function roles()
     {
         return $this->belongsToMany(Role::class);

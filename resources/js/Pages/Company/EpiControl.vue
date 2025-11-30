@@ -2,7 +2,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
 
-// --- DADOS MOCKADOS (Fictícios para visualização) ---
+// --- DADOS MOCKADOS (Fictícios para visualização, relativos a 2025-11-30) ---
 const deliveries = [
     { 
         id: 1, 
@@ -10,8 +10,8 @@ const deliveries = [
         role: 'Soldador',
         epi: 'Capacete de Segurança Aba Frontal', 
         ca: '498', 
-        date: '2024-01-15', 
-        validity: '2026-01-15', 
+        date: '2025-01-15', 
+        validity: '2027-01-15', // OK (Válido por mais de 1 ano)
         status: 'ok' 
     },
     { 
@@ -21,8 +21,8 @@ const deliveries = [
         epi: 'Luva de Látex Natural', 
         ca: '12345', 
         date: '2024-05-10', 
-        validity: '2024-11-10', 
-        status: 'warning' // Vencendo em breve
+        validity: '2025-06-30', // EXPIRED (Venceu em Junho)
+        status: 'expired'
     },
     { 
         id: 3, 
@@ -30,9 +30,9 @@ const deliveries = [
         role: 'Eletricista',
         epi: 'Botina de Segurança Eletricista', 
         ca: '8742', 
-        date: '2023-06-01', 
-        validity: '2024-06-01', 
-        status: 'expired' // Vencido
+        date: '2025-10-01', 
+        validity: '2025-12-25', // WARNING (Vence em menos de 60 dias)
+        status: 'warning'
     },
     { 
         id: 4, 
@@ -40,8 +40,8 @@ const deliveries = [
         role: 'Operadora de Máquina',
         epi: 'Protetor Auditivo Tipo Concha', 
         ca: '1423', 
-        date: '2024-02-20', 
-        validity: '2024-08-20', 
+        date: '2025-08-20', 
+        validity: '2026-05-20', // OK (Normal)
         status: 'ok' 
     },
     { 
@@ -51,8 +51,8 @@ const deliveries = [
         epi: 'Óculos de Proteção Incolor', 
         ca: '9821', 
         date: '2024-03-10', 
-        validity: '2025-03-10', 
-        status: 'ok' 
+        validity: '2025-01-10', // EXPIRED (Venceu em Janeiro)
+        status: 'expired' 
     },
     { 
         id: 6, 
@@ -60,9 +60,9 @@ const deliveries = [
         role: 'Técnica Química',
         epi: 'Respirador Semifacial', 
         ca: '4152', 
-        date: '2024-06-01', 
-        validity: '2024-12-01', 
-        status: 'ok' 
+        date: '2025-10-01', 
+        validity: '2026-01-30', // WARNING (Vence em breve)
+        status: 'warning' 
     },
 ];
 
@@ -116,7 +116,8 @@ const formatDate = (dateString) => {
 
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left min-w-[1000px]"> <thead class="bg-gray-50 text-gray-600 text-sm uppercase font-bold border-b border-gray-200">
+                    <table class="w-full text-left min-w-[1000px]">
+                        <thead class="bg-gray-50 text-gray-600 text-sm uppercase font-bold border-b border-gray-200">
                             <tr>
                                 <th class="p-4 w-1/4">Funcionário / Cargo</th>
                                 <th class="p-4 w-1/4">Equipamento (EPI)</th>
