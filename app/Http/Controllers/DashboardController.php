@@ -20,6 +20,7 @@ class DashboardController extends Controller
         }
 
         // 1. ADMIN (Visão Macro)
+        // 1. ADMIN
         if ($user->role === 'admin') {
             
             $stats = [
@@ -30,16 +31,22 @@ class DashboardController extends Controller
                 'pending_tickets' => \App\Models\Ticket::where('status', 'aberto')->count(),
             ];
 
-            $upcomingAppointments = Appointment::with(['company', 'provider'])
+            $upcomingAppointments = \App\Models\Appointment::with(['company', 'provider'])
                 ->where('scheduled_at', '>=', now())
                 ->orderBy('scheduled_at', 'asc')
                 ->take(10)
                 ->get();
 
+            // ✅ AQUI ESTÁ A CORREÇÃO: Buscando as empresas para a lista lateral
+            $companies = \App\Models\Company::orderBy('name', 'asc')
+                ->take(10) // Limita a 10 para não pesar o dashboard
+                ->get();
+
             return Inertia::render('Dashboards/Admin', [
                 'user' => $user,
                 'stats' => $stats,
-                'upcomingAppointments' => $upcomingAppointments
+                'upcomingAppointments' => $upcomingAppointments,
+                'companies' => $companies // <--- Enviando para o Vue
             ]);
         }
         
